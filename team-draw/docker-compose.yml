@@ -1,0 +1,73 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: excalidraw_nginx
+    restart: unless-stopped
+    ports:
+      - "3443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./libraries:/var/www/libraries:ro
+    depends_on:
+      - frontend
+      - storage
+      - room
+    networks:
+      - excalidraw_network
+
+  frontend:
+    image: alswl/excalidraw:v0.18.0-fork-b3
+    container_name: excalidraw_frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      # Storage backend URLs (proxied through nginx)
+      - VITE_APP_BACKEND_V2_GET_URL=https://${STORAGE_BACKEND_HOST}:3443/api/v2/scenes/
+      - VITE_APP_BACKEND_V2_POST_URL=https://${STORAGE_BACKEND_HOST}:3443/api/v2/scenes/
+      - VITE_APP_HTTP_STORAGE_BACKEND_URL=https://${STORAGE_BACKEND_HOST}:3443/api/v2
+      - VITE_APP_STORAGE_BACKEND=http
+      - VITE_APP_DISABLE_TRACKING=true
+
+      
+      # Collaboration server (WebSocket, proxied through nginx)
+      - VITE_APP_WS_SERVER_URL=https://${STORAGE_BACKEND_HOST}:3443
+      
+      # Disable Firebase
+      - VITE_APP_FIREBASE_CONFIG={}
+      # Disable plus environment
+      - VITE_APP_PLUS_APP=
+      - VITE_APP_PLUS_LP=
+      - VITE_APP_PORTAL_URL
+
+      #self hosted libraries:
+      - VITE_APP_LIBRARY_URL=https://${STORAGE_BACKEND_HOST}:3443/libraries/
+      - VITE_APP_LIBRARY_BACKEND=
+    networks:
+      - excalidraw_network
+
+  storage:
+    image: alswl/excalidraw-storage-backend:v2023.11.11
+    container_name: excalidraw_storage
+    restart: unless-stopped
+    expose:
+      - "8081"
+    environment:
+      - PORT=8081
+    networks:
+      - excalidraw_network
+
+  room:
+    image: excalidraw/excalidraw-room:sha-49bf529
+    container_name: excalidraw_room
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - excalidraw_network
+
+
+networks:
+  excalidraw_network:
+    driver: bridge
