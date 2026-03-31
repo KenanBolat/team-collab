@@ -13,6 +13,7 @@ services:
       - frontend
       - storage
       - room
+      - redis
     networks:
       - excalidraw_network
 
@@ -53,8 +54,9 @@ services:
     restart: unless-stopped
     expose:
       - "8081"
-    environment:
-      - PORT=8081
+    volumes: 
+      - excalidraw-storage-data:/storage
+      - ./storage-backup:/backup
     networks:
       - excalidraw_network
 
@@ -64,10 +66,38 @@ services:
     restart: unless-stopped
     expose:
       - "80"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SESSION_TIMEOUT=86400000
+      - PERSISTENCE_ENABLED=true
+
+    depends_on:
+      - redis
     networks:
       - excalidraw_network
+  redis:
+    image: redis:7-alpine
+    container_name: exalidraw_redis
+    restart: unless-stopped 
+    command: redis-server --appendonly yes --appendfsync everysec --save 900 1 --save 300 10 --save 60 10000
+    volumes: 
+      - redis-data:/data
+    networks:
+      - excalidraw_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s 
+      retries: 3 
 
 
 networks:
   excalidraw_network:
     driver: bridge
+
+volumes:
+  excalidraw-storage-data:
+    driver: local
+  redis-data: 
+    driver: local
+

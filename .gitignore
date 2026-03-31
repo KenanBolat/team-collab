@@ -1,4 +1,73 @@
-**/certs/
-**/certs/*
-.env
-**/.env
+# General
+*.log
+*.tmp
+*.swp
+*.swn
+*.bak
+*.class
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+*.exe
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+*.dSYM
+*.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+*.pyd
+*.egg-info/
+*.egg
+*.pth
+*.pyc
+*.pyo
+*.pyd
+vite/
+# Node.js
+node_modules/
+landing/node_modules
+node_modules
+**node_modules/
+npm-debug.log
+package-lock.json
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.*.yml
+docker-compose.*.yaml
+
+# Flask
+instance/
+flask.log
+
+# Node.js
+node_modules/
+npm-debug.log
+package-lock.json
+
+
+deploy/
+
+
+.idea/
+
+
+data/
+
+

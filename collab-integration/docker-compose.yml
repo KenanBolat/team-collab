@@ -1,0 +1,15 @@
+services:
+  excalidraw-integraion:
+    build: excalidraw/.
+    container_name: excalidraw_mattermost_integration
+    ports:
+      - "3021:3021"
+    environment:
+      - EXCALIDRAW_BASE_URL=${EXCALIDRAW_BASE_URL}
+    restart: unless-stopped
+    networks: 
+      - mattermost-network
+
+networks:
+  mattermost-network:
+    driver: bridge

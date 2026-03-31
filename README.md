@@ -11,3 +11,15 @@
     ./generate-cert.sh
     ./download_libraries.sh
  ```
+
+## Mattermost integrations:
+ - Excalidraw integration with mattermost:
+    - All the integrations are being collectedo to the  `collab_integration` folder 
+         - For example: excalidraw integration can be initiated from here.
+         ```bash 
+         docker compose up -d 
+         ```  
+         - make sure to edit related .env file an argument:
+            ```bash
+            EXCALIDRAW_BASE_URL=<your IP>
+            ```
